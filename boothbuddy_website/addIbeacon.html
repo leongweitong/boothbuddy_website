@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BoothBuddy Admin</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="img/favicon_io/site.webmanifest">
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <script type="module" src="firebase.js" defer></script>
+    <script type="module" src="protect.js" defer></script>
+
+    <script>
+    // Wait a moment for firebase.js to load
+    setTimeout(() => {
+      const auth = window.firebaseAuth;
+      const db = window.firebaseDB;
+
+      console.log("Firebase Auth:", auth);
+      console.log("Firebase Firestore:", db);
+    }, 1000);
+  </script>
+
+</head>
+<body>
+
+    <div class="my-4">
+        <a id="backButton" href="#" class="btn btn-secondary ml-3 mb-3">
+        ← Back
+        </a>
+        <h2 class="mb-4 text-center">Add Ibeacon</h2>
+
+    <form id="addIbeaconForm" class="container" style="max-width: 600px;">
+    <div class="form-group">
+        <label for="ibeacon_name">Ibeacon Name</label>
+        <input type="text" class="form-control" id="ibeacon_name" required>
+    </div>
+
+    <div class="form-group">
+        <label>Coordinate (click on image)</label><br>
+         <div style="position: relative; display: inline-block;">
+            <img id="floorplan" alt="Floor Plan" class="border mb-2" style="display: block;" />
+            <canvas id="overlayCanvas" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
+        </div>
+        <p class="text-muted">X: <span id="xValue">-</span> Y: <span id="yValue">-</span></p>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Ibeacon</button>
+    </form>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/chart.js/Chart.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="js/demo/chart-area-demo.js"></script>
+    <script src="js/demo/chart-pie-demo.js"></script>
+
+    <script type="module">
+        import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import {
+        getFirestore,
+        doc,
+        setDoc,
+        serverTimestamp,
+        collection,
+        addDoc,
+        Timestamp,
+        getDocs,
+        getDoc,
+        query, 
+        where,
+        updateDoc, 
+        deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const form = document.getElementById("addIbeaconForm");
+        const floorplan = document.getElementById("floorplan");
+        const canvas = document.getElementById("overlayCanvas");
+        const ctx = canvas.getContext("2d");
+        const xSpan = document.getElementById("xValue");
+        const ySpan = document.getElementById("yValue");
+        const button = document.getElementById("backButton")
+
+        let xCoord = null;
+        let yCoord = null;
+
+        // 🧠 Get event ID and image URL from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get("eventId");
+        const url = urlParams.get("url");
+
+        if (!eventId || !url) {
+        alert("Missing event ID or url.");
+        } else {
+
+        button.href = `eventDetails.html?id=${eventId}`
+        // ✅ Set image src dynamically from URL param
+        floorplan.src = decodeURIComponent(url);
+
+        // ✅ Ensure the image renders at original size
+        floorplan.onload = () => {
+            floorplan.style.width = floorplan.naturalWidth + "px";
+            floorplan.style.height = floorplan.naturalHeight + "px";
+
+            canvas.width = floorplan.width;
+            canvas.height = floorplan.height;
+        };
+        }
+
+        // 🖱 Handle image click for coordinate selection
+        floorplan.addEventListener("click", function (e) {
+            const rect = floorplan.getBoundingClientRect();
+            const scaleX = floorplan.naturalWidth / rect.width;
+            const scaleY = floorplan.naturalHeight / rect.height;
+
+            xCoord = Math.round((e.clientX - rect.left) * scaleX);
+            yCoord = Math.round((e.clientY - rect.top) * scaleY);
+
+            xSpan.textContent = xCoord;
+            ySpan.textContent = yCoord;
+
+            // Scale canvas dot coordinates to match canvas size
+            const dotX = (xCoord / floorplan.naturalWidth) * canvas.width;
+            const dotY = (yCoord / floorplan.naturalHeight) * canvas.height;
+
+            // Clear previous dot
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw red dot
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+        });
+
+        // 📨 Handle form submission
+        form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (xCoord === null || yCoord === null) {
+            alert("Please click on the floor plan to select coordinates.");
+            return;
+        }
+
+        const ibeaconData = {
+            name: document.getElementById("ibeacon_name").value,
+            coordinate: {
+            x: xCoord,
+            y: yCoord
+            },
+            event_id: eventId
+        };
+
+        try {
+            await addDoc(collection(window.firebaseDB, "ibeacons"), ibeaconData);
+            alert("Booth added successfully!");
+            form.reset();
+            xSpan.textContent = "-";
+            ySpan.textContent = "-";
+            xCoord = null;
+            yCoord = null;
+        } catch (error) {
+            console.error("Error adding ibeacon:", error);
+            alert("Failed to add ibeacon.");
+        }
+        });
+
+    </script>
+
+    
+
+</body>
+
+</html>

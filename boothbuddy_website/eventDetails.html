@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BoothBuddy Admin</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="img/favicon_io/site.webmanifest">
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <script type="module" src="firebase.js" defer></script>
+    <script type="module" src="protect.js" defer></script>
+
+    <script>
+    // Wait a moment for firebase.js to load
+    setTimeout(() => {
+      const auth = window.firebaseAuth;
+      const db = window.firebaseDB;
+
+      console.log("Firebase Auth:", auth);
+      console.log("Firebase Firestore:", db);
+    }, 1000);
+  </script>
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">BoothBuddy</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Interface
+            </div>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers"
+                    aria-expanded="true" aria-controls="collapseUsers">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Users</span>
+                </a>
+                <div id="collapseUsers" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="userLists.html">User Lists</a>
+                        <a class="collapse-item" href="addUser.html">Add User</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseEvents"
+                    aria-expanded="true" aria-controls="collapseEvents">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Events</span>
+                </a>
+                <div id="collapseEvents" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="eventLists.html">Event Lists</a>
+                        <a class="collapse-item" href="addEvent.html">Add Event</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuestions"
+                    aria-expanded="true" aria-controls="collapseQuestions">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Questions</span>
+                </a>
+                <div id="collapseQuestions" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="questionLists.html">Question Lists</a>
+                        <a class="collapse-item" href="addQuestion.html">Add Question</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseEvaluations"
+                    aria-expanded="true" aria-controls="collapseEvaluations">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Evaluations</span>
+                </a>
+                <div id="collapseEvaluations" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="boothEvaluations.html">Evaluation Lists</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+
+                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                                aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small"
+                                            placeholder="Search for..." aria-label="Search"
+                                            aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Event Details</h1>
+                    </div>
+
+                    <div class="row">
+                    <div class="col-lg-12">
+                        <table class="table table-bordered mt-3">
+                        <thead class="thead-light">
+                            <tr>
+                            <th>Event Name</th>
+                            <th>Pictures</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td id="eventName">-</td>
+                            <td id="eventPictures">-</td>
+                            <td id="eventDescription">-</td>
+                            <td id="eventLocation">-</td>
+                            <td id="eventTime">-</td>
+                            <td id="addPictureLink">-</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                    </div>
+
+                    <!-- Picture Table -->
+                    <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Event Pictures</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table class="table table-bordered" id="eventTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>Picture</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody id="picturesTableBody"></tbody>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 id="pointsCardText" class="h3 mb-0 text-gray-800">Points</h1>
+                    </div>
+
+                    <div id="pointsCard" class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Points</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table class="table table-bordered" id="pointsTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Points</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody id="pointsTableBody"></tbody>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Booths</h1>
+                        <div>
+                            <a id="addBoothLink">Add Booth</a>
+                        </div>
+                    </div>
+
+                    <!-- Booth Table -->
+                    <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Booths</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table class="table table-bordered" id="boothTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>Booth Name</th>
+                                <th>Pictures</th>
+                                <th>Description</th>
+                                <th>X</th>
+                                <th>Y</th>
+                                <th>Disable</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody id="boothTableBody"></tbody>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Ibeacons</h1>
+                        <a id="addIbeaconLink">Add Ibeacon</a>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Ibeacons</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table class="table table-bordered" id="boothTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>iBeacon Name</th>
+                                <th>X</th>
+                                <th>Y</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody id="ibeaconTableBody"></tbody>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Assign Event</h1>
+                        <a id="addAssignEventLink">Add Judge</a>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Assign Event</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table class="table table-bordered" id="boothTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Judge Name</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody id="assignEventTableBody"></tbody>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; BoothBuddy 2025</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button id="logoutBtn" class="btn btn-primary">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/chart.js/Chart.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="js/demo/chart-area-demo.js"></script>
+    <script src="js/demo/chart-pie-demo.js"></script>
+
+    <script type="module">
+        import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import {
+        getFirestore,
+        doc,
+        setDoc,
+        serverTimestamp,
+        collection,
+        addDoc,
+        Timestamp,
+        getDocs,
+        getDoc,
+        query, 
+        where,
+        updateDoc, 
+        deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+
+        // Fetch Event Details
+        async function fetchEvent(eventId) {
+        const docRef = doc(window.firebaseDB, "events", eventId);
+        const docSnap = await getDoc(docRef);
+        return docSnap.exists() ? docSnap.data() : null;
+        }
+
+        // Fetch related booths
+        async function fetchBooths(eventId) {
+        const q = query(collection(window.firebaseDB, "booths"), where("event_id", "==", eventId));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data()
+            }
+        })};
+
+        // Fetch related ibeacons
+        async function fetchIBeacons(eventId) {
+        const q = query(collection(window.firebaseDB, "ibeacons"), where("event_id", "==", eventId));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data()
+            }
+        })};
+
+        // Fetch related points
+        async function fetchPoints(eventId) {
+        const q = query(collection(window.firebaseDB, "points"), where("event_id", "==", eventId));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data()
+            }
+        })};
+
+        // Fetch related pictures
+        async function fetchPictures(eventId) {
+        const q = query(collection(window.firebaseDB, "pictures"), where("belong_id", "==", eventId));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data()
+            }
+        })};
+
+        async function fetchBoothsWithPictures(booths) {
+
+        // For each booth, fetch pictures linked by booth ID
+        const boothsWithPictures = await Promise.all(
+            booths.map(async (booth) => {
+            const picsSnapshot = await getDocs(
+                query(collection(window.firebaseDB, "pictures"), where("belong_id", "==", booth.id))
+            );
+            const pictures = picsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            return {
+                ...booth,
+                pictures,
+            };
+            })
+        );
+
+        return boothsWithPictures;
+        }
+
+        async function loadEventDetails() {
+            if (!eventId) {
+                alert("No event ID found in URL.");
+                return;
+            }
+
+            try {
+                const event = await fetchEvent(eventId);
+                const booths = await fetchBooths(eventId);
+                const ibeacons = await fetchIBeacons(eventId);
+                const points = await fetchPoints(eventId);
+                const pictures = await fetchPictures(eventId);
+                const boothPictures = await fetchBoothsWithPictures(booths);
+                console.log(boothPictures)
+
+                const addBoothLink = document.getElementById("addBoothLink");
+                addBoothLink.href = `addBooth.html?eventId=${encodeURIComponent(eventId)}&url=${event.floor_plan}`;
+
+                const addIbeaconLink = document.getElementById("addIbeaconLink");
+                addIbeaconLink.href = `addIbeacon.html?eventId=${encodeURIComponent(eventId)}&url=${event.floor_plan}`;
+
+                document.getElementById('addAssignEventLink').href = `addJudge.html?eventId=${encodeURIComponent(eventId)}`
+
+                console.log("Event:", event);
+                console.log("Booths:", booths);
+                console.log("IBeacons:", ibeacons);
+                console.log("Points:", points);
+                console.log("Pictures:", pictures);
+
+                const pointsCard = document.getElementById("pointsCard");
+                const pointsCardText = document.getElementById("pointsCardText")
+
+                if (event.preset_position === true) {
+                pointsCard.style.display = "block";
+                pointsCardText.style.display = "block";
+                } else {
+                pointsCard.style.display = "none";
+                pointsCardText.style.display = "none";
+                }
+
+                // You can now display the data on your HTML page
+                document.getElementById("eventName").textContent = event.event_name;
+                document.getElementById("eventDescription").textContent = event.description;
+                document.getElementById("eventLocation").textContent = event.location;
+                document.getElementById("eventTime").textContent = new Date(event.event_time.seconds * 1000).toLocaleString();
+                let eventhtml = `
+                <a href="addPicture.html?id=${eventId}" class="btn btn-sm btn-primary">Add Pictures</a>
+                `;
+
+                if (event.preset_position === true) {
+                eventhtml += `
+                    <a href="addPoints.html?id=${eventId}&url=${event.floor_plan}" class="btn btn-sm btn-secondary">Add Points</a>
+                `;
+                }
+
+                document.getElementById('addPictureLink').innerHTML = eventhtml;
+                document.getElementById("eventPictures").innerHTML = `${pictures.length || "0"}`;
+
+                const pictureTbody = document.getElementById("picturesTableBody");
+                pictureTbody.innerHTML = "";
+                pictures.forEach(picture => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><img src="${picture.picture_path}" alt="picture" style="max-width: 100px;"/></td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deletePicture('${picture.id}')">Delete</button>
+                        </td>
+                    `;
+                    pictureTbody.appendChild(tr);
+                });
+
+
+                const tbody = document.getElementById("pointsTableBody");
+                tbody.innerHTML = "";
+                points.forEach((point, i) => {
+                    const pointsList = point.points.map((pt, i) => `${i + 1}. x: ${pt.x} y: ${pt.y}`).join("<br>");
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${pointsList}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deletePoint('${point.id}')">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                const boothBody = document.getElementById("boothTableBody");
+                boothBody.innerHTML = "";
+
+                boothPictures.forEach(b => {
+                    boothBody.innerHTML += `
+                    <tr>
+                        <td>${b.booth_name}</td>
+                        <td>
+                            ${
+                                b.pictures.length > 0 
+                                ? b.pictures.map(p => `<img src="${p.picture_path}" alt="Booth Picture" style="height: 50px; margin-right: 5px;" />`).join("")
+                                : "-"
+                            }
+                        </td>
+                        <td>${b.description || "-"}</td>
+                        <td>${b.coordinate?.x ?? "-"}</td>
+                        <td>${b.coordinate?.y ?? "-"}</td>
+                        <td>
+                            <button class="btn btn-sm ${b.status ? "btn-warning" : "btn-success"} booth-toggle-btn" data-id="${b.id}" data-status="${b.status}">
+                                ${b.status ? "Disable" : "Enable"}
+                            </button>
+                        </td>
+                        <td>
+                            <a href="addBoothQuestions.html?id=${b.id}" class="btn btn-sm btn-primary">Add Questions</a>
+                            <a href="addBoothPaths.html?id=${b.id}&url=${event.floor_plan}&x=${b.coordinate.x}&y=${b.coordinate.y}" class="btn btn-sm btn-success">Add Paths</a>
+                            <a href="addPicture.html?id=${b.id}" class="btn btn-sm btn-warning">Add Pictures</a>
+                            <a href="boothDetails.html?id=${b.id}" class="btn btn-sm btn-secondary">View Details</a>
+                        </td>
+                    </tr>
+                    `;
+                });
+
+                const ibeaconBody = document.getElementById("ibeaconTableBody");
+                ibeaconBody.innerHTML = "";
+
+                ibeacons.forEach(i => {
+                    ibeaconBody.innerHTML += `
+                    <tr>
+                        <td>${i.name}</td>
+                        <td>${i.coordinate?.x ?? "-"}</td>
+                        <td>${i.coordinate?.y ?? "-"}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm beacon-delete-btn" data-id="${i.id}">Delete</button>
+                        </td>
+                    </tr>
+                    `;
+                });
+
+                loadAssignedJudges(eventId)
+
+            } catch (error) {
+                console.error("Error fetching event-related data:", error);
+            }
+        }
+
+        loadEventDetails();
+
+        window.deletePicture = async function (id) {
+            if (confirm("Are you sure you want to delete this picture?")) {
+                await deleteDoc(doc(window.firebaseDB, "pictures", id));
+                const pictures = await fetchPictures(eventId);
+                const pictureTbody = document.getElementById("picturesTableBody");
+                pictureTbody.innerHTML = "";
+                pictures.forEach(picture => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><img src="${picture.picture_path}" alt="picture" style="max-width: 100px;"/></td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deletePicture('${picture.id}')">Delete</button>
+                        </td>
+                    `;
+                    pictureTbody.appendChild(tr);
+                });
+            }
+        }
+
+        window.deletePoint = async function (id) {
+            if (confirm("Are you sure you want to delete this point?")) {
+                await deleteDoc(doc(window.firebaseDB, "points", id));
+                loadEventDetails(); // refresh
+            }
+        }
+
+        document.addEventListener("click", async (e) => {
+            // Booth enable/disable toggle
+            if (e.target.classList.contains("booth-toggle-btn")) {
+                const boothId = e.target.dataset.id;
+                const currentStatus = e.target.dataset.status === "true";
+
+                try {
+                    await updateDoc(doc(window.firebaseDB, "booths", boothId), {
+                        status: !currentStatus
+                    });
+                    alert(`Booth ${currentStatus ? "disabled" : "enabled"} successfully.`);
+                    loadEventDetails(); // Refresh table
+                } catch (error) {
+                    console.error("Failed to toggle booth status:", error);
+                    alert("Failed to update booth status.");
+                }
+            }
+
+            // iBeacon delete
+            if (e.target.classList.contains("beacon-delete-btn")) {
+                const beaconId = e.target.dataset.id;
+
+                if (confirm("Are you sure you want to delete this iBeacon?")) {
+                    try {
+                        await deleteDoc(doc(window.firebaseDB, "ibeacons", beaconId));
+                        alert("iBeacon deleted successfully.");
+                        loadEventDetails(); // Refresh table
+                    } catch (error) {
+                        console.error("Failed to delete iBeacon:", error);
+                        alert("Failed to delete iBeacon.");
+                    }
+                }
+            }
+        });
+
+        async function loadAssignedJudges(eventId) {
+            const tableBody = document.getElementById("assignEventTableBody");
+            tableBody.innerHTML = "";
+
+            try {
+                // Step 1: Get all users who are judges
+                const usersSnapshot = await getDocs(collection(window.firebaseDB, "users"));
+                const judgesMap = {};
+                usersSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.userType === "judge") {
+                        judgesMap[doc.id] = data.username || "Unnamed Judge";
+                    }
+                });
+
+                // Step 2: Get all assign_event documents with matching event_id
+                const assignSnapshot = await getDocs(collection(window.firebaseDB, "assign_event"));
+                const assignedJudges = [];
+                assignSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.event_id === eventId && judgesMap[data.user_id]) {
+                        assignedJudges.push({
+                            userId: data.user_id,
+                            username: judgesMap[data.user_id]
+                        });
+                    }
+                });
+
+                // Step 3: Populate table
+                assignedJudges.forEach((judge, index) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${judge.username}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="removeAssignment('${eventId}', '${judge.userId}')">Remove</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Handle empty state
+                if (assignedJudges.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="3" class="text-center">No judges assigned to this event.</td></tr>`;
+                }
+
+            } catch (err) {
+                console.error("Error loading assigned judges:", err);
+                alert("Failed to load judge assignments.");
+            }
+        }
+
+        window.removeAssignment = async function (eventId, userId) {
+            try {
+                const assignRef = collection(window.firebaseDB, "assign_event");
+                const querySnap = await getDocs(assignRef);
+                querySnap.forEach(async (docSnap) => {
+                    const data = docSnap.data();
+                    if (data.event_id === eventId && data.user_id === userId) {
+                        await deleteDoc(doc(window.firebaseDB, "assign_event", docSnap.id));
+                        loadAssignedJudges(eventId); // Refresh table
+                    }
+                });
+            } catch (err) {
+                console.error("Error removing assignment:", err);
+                alert("Failed to remove assignment.");
+            }
+        }
+
+
+    </script>
+
+    
+
+</body>
+
+</html>
