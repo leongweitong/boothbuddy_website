@@ -314,6 +314,33 @@
                         </div>
                     </div>
 
+
+                    <div class="row">
+
+                        <!-- Area Chart -->
+                        <div class="col-12">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Attendance Overview</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area">
+                                        <canvas id="myChart2"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <!-- /.container-fluid -->
 
@@ -391,8 +418,10 @@
 
     const fakeLabels = ["Booth A", "Booth B", "Booth C", "Booth D", "Booth E"];
     const fakeData = [3.5, 4.2, 2.8, 4.7, 3.9];
+    const fakeData2 = [15, 25, 35, 45, 55];
 
     const ctx = document.getElementById("myChart").getContext("2d");
+    const ctx2 = document.getElementById("myChart2").getContext("2d");
 
     let myChart = new Chart(ctx, {
         type: "line",
@@ -436,10 +465,53 @@
         }
     });
 
+    let myChart2 = new Chart(ctx2, {
+        type: "line",
+        data: {
+            labels: fakeLabels,
+            datasets: [{
+                label: "Total Attends",
+                data: fakeData2,
+                fill: true,
+                backgroundColor: "rgba(78, 115, 223, 0.1)",
+                borderColor: "rgba(78, 115, 223, 1)",
+                pointRadius: 4,
+                pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    suggestedMin: 1,
+                    title: {
+                        display: true,
+                        text: "Total Attends"
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: "Booth Name"
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+
     async function fetchBoothsAndEvaluations() {
         try {
             const boothNames = [];
             const boothAverages = [];
+            const attendBooth = [];
+            const attendTotals = [];
 
             // Step 1: Fetch all booths
             const boothsSnapshot = await getDocs(collection(db, "booths"));
@@ -484,7 +556,25 @@
                 boothAverages.push(average);
             }
 
-            renderLineChart(boothNames, boothAverages);
+            // Step 2: Calculate average score for each booth
+            for (let booth of booths) {
+                const boothId = booth.id;
+                const boothName = booth.booth_name || "Unnamed Booth";
+
+                const attendQuery = query(
+                    collection(db, "attends"),
+                    where("booth_id", "==", boothId)
+                );
+
+                const attendSnapshot = await getDocs(attendQuery);
+
+                const numberOfAttempts = attendSnapshot.size;
+
+                attendBooth.push(boothName);
+                attendTotals.push(numberOfAttempts);
+            }
+
+            renderLineChart2(attendBooth, attendTotals);
         } catch (err) {
             console.error("Failed to load booth evaluations:", err);
             alert("Error loading booth evaluation data.");
@@ -495,6 +585,12 @@
         myChart.data.labels = labels;
         myChart.data.datasets[0].data = data;
         myChart.update();
+    }
+
+    function renderLineChart2(labels, data) {
+        myChart2.data.labels = labels;
+        myChart2.data.datasets[0].data = data;
+        myChart2.update();
     }
 
     async function loadDashboardStats() {
@@ -530,6 +626,8 @@
     }
 
     loadDashboardStats();
+
+    fetchBoothsAndEvaluations();
 
     fetchBoothsAndEvaluations();
 </script>
