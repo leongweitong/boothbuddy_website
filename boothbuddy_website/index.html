@@ -574,6 +574,7 @@
                 attendTotals.push(numberOfAttempts);
             }
 
+            renderLineChart(boothNames, boothAverages);
             renderLineChart2(attendBooth, attendTotals);
         } catch (err) {
             console.error("Failed to load booth evaluations:", err);

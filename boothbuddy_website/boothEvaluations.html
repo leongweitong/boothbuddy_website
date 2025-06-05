@@ -209,11 +209,32 @@
                     <!-- Picture Table -->
                     <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Booth Evaluation</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Judge Booth Evaluation</h6>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
                         <table class="table table-bordered" id="boothEvaluationTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Booth Name</th>
+                                <th>Overall Star</th>
+                                <!-- <th>Action</th> -->
+                            </tr>
+                            </thead>
+                            <tbody id="boothEvaluationTableBody"></tbody>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Visitor Booth Evaluation</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table class="table table-bordered" id="visitorBoothEvaluationTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
                                 <th>#</th>
@@ -307,6 +328,7 @@
 
     const db = window.firebaseDB;
     const tableBody = document.getElementById("boothEvaluationTableBody");
+    const tableBody2 = document.getElementById("visitorBoothEvaluationTable")
 
     async function fetchBoothsAndEvaluations() {
         try {
@@ -325,7 +347,8 @@
                 const evalQuery = query(
                     collection(db, "evaluations"),
                     where("boothId", "==", boothId),
-                    where("status", "==", "submitted")
+                    where("status", "==", "submitted"),
+                    where("userType", "==", "judge")
                 );
 
                 const evalSnapshot = await getDocs(evalQuery);
@@ -359,6 +382,44 @@
                 
                 // <td><a class="btn btn-sm btn-info" href="boothEvaluationDetails.html?id=${booth.id}">View Details</a></td>
                 tableBody.appendChild(row);
+
+
+                const evalVisitorQuery = query(
+                    collection(db, "evaluations"),
+                    where("boothId", "==", boothId),
+                    where("status", "==", "submitted"),
+                    where("userType", "==", "visitor")
+                );
+
+                const evalVisitorSnapshot = await getDocs(evalVisitorQuery);
+
+                let visitorTotal = 0;
+                let visitorCount = 0;
+
+                evalVisitorSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const responses = data.responses;
+
+                    if (responses && typeof responses === "object") {
+                        Object.values(responses).forEach(score => {
+                            if (typeof score === "number") {
+                                visitorTotal += score;
+                                visitorCount++;
+                            }
+                        });
+                    }
+                });
+
+                const visitorAverage = visitorCount > 0 ? (visitorTotal / visitorCount).toFixed(2) : "N/A";
+
+                // Step 3: Add row to table
+                const row2 = document.createElement("tr");
+                row2.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${booth.booth_name || "Unnamed Booth"}</td>
+                    <td>${visitorAverage}</td>
+                `;
+                tableBody2.appendChild(row2);
             }
         } catch (err) {
             console.error("Failed to load booth evaluations:", err);
