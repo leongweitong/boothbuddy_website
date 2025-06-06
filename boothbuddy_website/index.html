@@ -550,6 +550,7 @@
                     }
                 });
 
+                if(count === 0) continue;
                 const average = count > 0 ? Number((total / count).toFixed(2)) : 0;
 
                 boothNames.push(boothName);
@@ -569,6 +570,8 @@
                 const attendSnapshot = await getDocs(attendQuery);
 
                 const numberOfAttempts = attendSnapshot.size;
+
+                if(numberOfAttempts === 0) continue;
 
                 attendBooth.push(boothName);
                 attendTotals.push(numberOfAttempts);
