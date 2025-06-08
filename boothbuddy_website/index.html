@@ -413,6 +413,7 @@
         query,
         where
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
     const db = window.firebaseDB;
 
@@ -634,6 +635,23 @@
     fetchBoothsAndEvaluations();
 
     fetchBoothsAndEvaluations();
+
+    document.getElementById("userDisplayName").textContent = JSON.parse(localStorage.getItem('user')).username
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Add click event listener
+    logoutBtn.addEventListener("click", async () => {
+        try {
+            await signOut(window.firebaseAuth);
+            alert("Logged out successfully!");
+            // Redirect to login page or homepage
+            window.location.href = "login.html";
+        } catch (error) {
+            console.error("Logout error:", error);
+            alert("Failed to log out: " + error.message);
+        }
+    });
 </script>
 
 

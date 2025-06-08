@@ -7,4 +7,5 @@ if (!user) {
     // Not logged in
     window.location.href = "login.html";
 }
+console.log(user)
 });
